@@ -1,0 +1,124 @@
+<ion-content>
+  <div class="auth">
+    <section class="auth__brand" aria-label="Presentación de StockPilot">
+      <div class="auth__logo">
+        <span class="auth__logo-mark" aria-hidden="true">SP</span> StockPilot
+      </div>
+      <div>
+        <h2>Crea tu cuenta en menos de un minuto.</h2>
+        <ul class="auth__features">
+          <li>
+            <ion-icon name="cart-outline" aria-hidden="true"></ion-icon> Realiza pedidos al instante
+          </li>
+          <li>
+            <ion-icon name="notifications-outline" aria-hidden="true"></ion-icon> Recibe avisos
+            cuando cambie su estado
+          </li>
+          <li>
+            <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon> Acceso seguro
+            con roles
+          </li>
+        </ul>
+      </div>
+      <p class="auth__foot">Proyecto académico · Desarrollo de Interfaces (DAM)</p>
+    </section>
+
+    <div id="contenido" class="auth__panel" tabindex="-1">
+      <div class="auth__card">
+        <div class="auth__mobile-logo" aria-hidden="true">
+          <span>SP</span><span>StockPilot</span>
+        </div>
+        <div>
+          <h1 class="auth__title">Crear cuenta</h1>
+          <p class="auth__subtitle">Tendrás el rol de Usuario estándar.</p>
+        </div>
+
+        @if (auth.error()) {
+          <div class="sp-alert sp-alert--error" role="alert">
+            <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+            <span>{{ auth.error() }}</span>
+          </div>
+        }
+
+        <form class="auth__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <ion-input
+            class="sp-input"
+            formControlName="fullName"
+            label="Nombre completo"
+            labelPlacement="stacked"
+            fill="outline"
+            autocomplete="name"
+            aria-describedby="reg-name-msg"
+            [required]="true"
+          ></ion-input>
+          <app-field-error [control]="form.controls.fullName" id="reg-name-msg" />
+
+          <ion-input
+            class="sp-input"
+            formControlName="email"
+            type="email"
+            label="Correo electrónico"
+            labelPlacement="stacked"
+            fill="outline"
+            autocomplete="email"
+            inputmode="email"
+            aria-describedby="reg-email-msg"
+            [required]="true"
+          ></ion-input>
+          <app-field-error
+            [control]="form.controls.email"
+            id="reg-email-msg"
+            hint="Comprobaremos que no esté registrado."
+          />
+
+          <ion-input
+            class="sp-input"
+            formControlName="password"
+            type="password"
+            label="Contraseña"
+            labelPlacement="stacked"
+            fill="outline"
+            autocomplete="new-password"
+            aria-describedby="reg-password-msg"
+            [required]="true"
+          >
+            <ion-input-password-toggle
+              slot="end"
+              showLabel="Mostrar contraseña"
+              hideLabel="Ocultar contraseña"
+            ></ion-input-password-toggle>
+          </ion-input>
+          <app-field-error
+            [control]="form.controls.password"
+            id="reg-password-msg"
+            hint="Mínimo 8 caracteres con mayúscula, minúscula y número."
+          />
+
+          <ion-input
+            class="sp-input"
+            formControlName="confirmPassword"
+            type="password"
+            label="Repite la contraseña"
+            labelPlacement="stacked"
+            fill="outline"
+            autocomplete="new-password"
+            aria-describedby="reg-confirm-msg"
+            [required]="true"
+          ></ion-input>
+          <app-field-error [control]="form.controls.confirmPassword" id="reg-confirm-msg" />
+
+          <ion-button type="submit" expand="block" [disabled]="submitting() || pending()">
+            @if (submitting()) {
+              <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+              Creando cuenta…
+            } @else {
+              Crear cuenta
+            }
+          </ion-button>
+        </form>
+
+        <p class="auth__switch">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+      </div>
+    </div>
+  </div>
+</ion-content>
