@@ -1,0 +1,94 @@
+# Integración continua: calidad, tests, build, accesibilidad y seguridad.
+# Se ejecuta en cada push y en cada Pull Request. La rama main está protegida:
+# solo admite PRs con este pipeline en verde.
+name: CI
+
+on:
+  push:
+    branches: [develop, 'feature/**', 'release/**', 'hotfix/**']
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, formato y tests unitarios
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint (ESLint + reglas de accesibilidad en plantillas)
+        run: npm run lint
+      - name: Formato (Prettier)
+        run: npm run format:check
+      - name: Tipos de la API serverless
+        run: npm run typecheck:api
+      - name: Tests unitarios del frontend con cobertura
+        run: npm run test:coverage
+      - name: Tests de la API contra PostgreSQL en memoria (PGlite)
+        run: npm run test:api
+      - name: Cobertura de documentación (Compodoc ≥ 90 %)
+        run: npm run docs:coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage
+          retention-days: 7
+
+  e2e:
+    name: E2E (Playwright) y auditoría Lighthouse
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build de producción en modo demostración
+        run: npm run build:e2e
+      - name: Instalar navegadores de Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Tests E2E (escritorio y móvil) + axe-core
+        run: npm run test:e2e
+      - name: Lighthouse CI (accesibilidad y buenas prácticas ≥ 95)
+        run: npm run lhci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: informes-e2e-lighthouse
+          path: |
+            playwright-report
+            .lighthouseci
+          retention-days: 14
+
+  security:
+    name: Seguridad (secretos y dependencias)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Escaneo de secretos en todo el historial (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Auditoría de dependencias de producción
+        run: npm audit --omit=dev --audit-level=high
