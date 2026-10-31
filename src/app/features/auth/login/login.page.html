@@ -1,0 +1,112 @@
+<ion-content>
+  <div class="auth">
+    <section class="auth__brand" aria-label="Presentación de StockPilot">
+      <div class="auth__logo">
+        <span class="auth__logo-mark" aria-hidden="true">SP</span> StockPilot
+      </div>
+      <div>
+        <h2>Tu inventario, bajo control y en tiempo real.</h2>
+        <ul class="auth__features">
+          <li>
+            <ion-icon name="analytics-outline" aria-hidden="true"></ion-icon> Cuadro de mando con
+            métricas al instante
+          </li>
+          <li>
+            <ion-icon name="cube-outline" aria-hidden="true"></ion-icon> Stock, proveedores y
+            categorías en un solo lugar
+          </li>
+          <li>
+            <ion-icon name="download-outline" aria-hidden="true"></ion-icon> Informes en PDF y CSV
+            con un clic
+          </li>
+        </ul>
+      </div>
+      <p class="auth__foot">Proyecto académico · Desarrollo de Interfaces (DAM)</p>
+    </section>
+
+    <div id="contenido" class="auth__panel" tabindex="-1">
+      <div class="auth__card">
+        <div class="auth__mobile-logo" aria-hidden="true">
+          <span>SP</span><span>StockPilot</span>
+        </div>
+        <div>
+          <h1 class="auth__title">Iniciar sesión</h1>
+          <p class="auth__subtitle">Accede con tu cuenta para continuar.</p>
+        </div>
+
+        @if (demoMode) {
+          <div class="sp-alert sp-alert--info demo-hint" role="note">
+            <p>
+              <strong>Modo demostración.</strong> Elige una cuenta de prueba o escribe su correo con
+              cualquier contraseña de 8 o más caracteres.
+            </p>
+            <div class="demo-hint__buttons">
+              <ion-button size="small" fill="outline" (click)="fillDemo('admin')"
+                >Administrador</ion-button
+              >
+              <ion-button size="small" fill="outline" (click)="fillDemo('user')"
+                >Usuario estándar</ion-button
+              >
+            </div>
+          </div>
+        }
+
+        @if (auth.error()) {
+          <div class="sp-alert sp-alert--error" role="alert">
+            <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+            <span>{{ auth.error() }}</span>
+          </div>
+        }
+
+        <form class="auth__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <ion-input
+            class="sp-input"
+            formControlName="email"
+            type="email"
+            label="Correo electrónico"
+            labelPlacement="stacked"
+            fill="outline"
+            autocomplete="email"
+            inputmode="email"
+            placeholder="nombre@empresa.com"
+            aria-describedby="login-email-msg"
+            [required]="true"
+          ></ion-input>
+          <app-field-error [control]="form.controls.email" id="login-email-msg" />
+
+          <ion-input
+            class="sp-input"
+            formControlName="password"
+            type="password"
+            label="Contraseña"
+            labelPlacement="stacked"
+            fill="outline"
+            autocomplete="current-password"
+            aria-describedby="login-password-msg"
+            [required]="true"
+          >
+            <ion-input-password-toggle
+              slot="end"
+              showLabel="Mostrar contraseña"
+              hideLabel="Ocultar contraseña"
+            ></ion-input-password-toggle>
+          </ion-input>
+          <app-field-error [control]="form.controls.password" id="login-password-msg" />
+
+          <ion-button type="submit" expand="block" [disabled]="submitting()">
+            @if (submitting()) {
+              <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+              Entrando…
+            } @else {
+              Entrar
+            }
+          </ion-button>
+        </form>
+
+        <p class="auth__switch">
+          ¿Aún no tienes cuenta? <a routerLink="/registro">Crear cuenta</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</ion-content>
