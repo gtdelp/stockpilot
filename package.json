@@ -1,6 +1,6 @@
 {
   "name": "stockpilot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "env": "node scripts/set-env.mjs",
     "env:prod": "node scripts/set-env.mjs --prod",

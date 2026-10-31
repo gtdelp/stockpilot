@@ -1,7 +1,7 @@
 # Despliegue continuo: Vercel publica automáticamente cada commit de `main`
-# (y una preview por cada Pull Request). `main` está protegida y solo acepta
-# PRs con el pipeline de CI en verde, así que a producción solo llega código
-# que ha pasado todos los tests. Este workflow verifica cada despliegue de producción.
+# (y una preview por cada Pull Request). Solo llega a `main` código que ha pasado
+# el CI mediante Pull Request. Tras cada despliegue correcto este workflow
+# comprueba la URL publicada y genera el informe Lighthouse de producción.
 name: Deploy
 
 on:
@@ -11,18 +11,50 @@ permissions:
   contents: read
 
 jobs:
-  smoke-test:
-    name: Comprobación de humo del despliegue
+  verify:
+    name: Verificación y Lighthouse del despliegue
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
+    env:
+      URL: ${{ github.event.deployment_status.environment_url }}
     steps:
       - name: Rutas principales responden 200
-        env:
-          URL: ${{ github.event.deployment_status.environment_url }}
         run: |
           set -e
-          for path in / /login /productos /pedidos /docs/ /manifest.webmanifest; do
+          for path in / /login /productos /pedidos /panel /docs/ /manifest.webmanifest /ngsw-worker.js; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$URL$path")
             echo "$path → $code"
             test "$code" = "200"
           done
+      - name: Cabeceras de seguridad presentes
+        run: |
+          headers=$(curl -sI "$URL/login")
+          for header in strict-transport-security content-security-policy x-content-type-options referrer-policy; do
+            echo "$headers" | grep -qi "^$header:" && echo "✔ $header" || { echo "✘ falta $header"; exit 1; }
+          done
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Auditoría Lighthouse (móvil y escritorio)
+        run: |
+          mkdir -p lighthouse
+          npx -y lighthouse@13 "$URL/login" --quiet --chrome-flags="--headless=new --no-sandbox" \
+            --output=html --output=json --output-path=lighthouse/movil
+          npx -y lighthouse@13 "$URL/login" --preset=desktop --quiet --chrome-flags="--headless=new --no-sandbox" \
+            --output=html --output=json --output-path=lighthouse/escritorio
+          for f in movil escritorio; do
+            node -e "const r=require('./lighthouse/$f.report.json');console.log('$f: '+Object.values(r.categories).map(c=>c.title+' '+Math.round(c.score*100)).join(' · '))" | tee -a "$GITHUB_STEP_SUMMARY"
+          done
+          node -e "
+            for (const f of ['movil','escritorio']) {
+              const r = require('./lighthouse/' + f + '.report.json');
+              for (const id of ['accessibility','best-practices']) {
+                if (r.categories[id].score < 0.9) { console.error(f + ' ' + id + ' < 90'); process.exit(1); }
+              }
+            }"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-produccion
+          path: lighthouse
+          retention-days: 90
