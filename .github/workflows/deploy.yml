@@ -5,7 +5,9 @@
 name: Deploy
 
 on:
-  deployment_status:
+  # Vercel publica un commit status «Vercel» cuando termina cada despliegue
+  status:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,10 +15,13 @@ permissions:
 jobs:
   verify:
     name: Verificación y Lighthouse del despliegue
-    if: github.event.deployment_status.state == 'success'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.context == 'Vercel' && github.event.state == 'success' &&
+      contains(github.event.branches.*.name, 'main'))
     runs-on: ubuntu-latest
     env:
-      URL: ${{ github.event.deployment_status.environment_url }}
+      URL: https://stockpilot-eight-phi.vercel.app
     steps:
       - name: Rutas principales responden 200
         run: |
