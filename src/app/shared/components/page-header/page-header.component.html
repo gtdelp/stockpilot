@@ -1,0 +1,39 @@
+<header class="page-header">
+  <div class="page-header__text">
+    @if (breadcrumbs().length) {
+      <nav aria-label="Ruta de navegación">
+        <ol class="crumbs">
+          @for (crumb of breadcrumbs(); track crumb.label; let last = $last) {
+            <li>
+              @if (crumb.link && !last) {
+                <a [routerLink]="crumb.link">{{ crumb.label }}</a>
+              } @else {
+                <span [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+              }
+            </li>
+          }
+        </ol>
+      </nav>
+    }
+    <div class="page-header__title-row">
+      <h1>{{ title() }}</h1>
+      @if (showHelp()) {
+        <ion-button
+          fill="clear"
+          size="small"
+          class="help-button"
+          (click)="helpRequested.emit()"
+          [attr.aria-label]="'Ayuda sobre ' + title()"
+        >
+          <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+        </ion-button>
+      }
+    </div>
+    @if (subtitle()) {
+      <p class="page-header__subtitle">{{ subtitle() }}</p>
+    }
+  </div>
+  <div class="page-header__actions">
+    <ng-content />
+  </div>
+</header>
