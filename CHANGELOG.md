@@ -2,6 +2,13 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.0.1] - 2026-10-31
+
+### Añadido
+
+- Verificación automática de cada despliegue de producción: rutas principales, cabeceras de seguridad e informe Lighthouse (móvil y escritorio) guardado como artefacto.
+- Etiquetado y Release de GitHub automáticos al publicar una versión en `main`.
+
 ## [1.0.0] - 2026-10-31
 
 ### Añadido
