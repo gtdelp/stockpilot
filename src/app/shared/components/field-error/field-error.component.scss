@@ -1,0 +1,16 @@
+.field-message {
+  min-height: 1.25rem;
+  margin: var(--sp-space-1) 0 0;
+  font-size: var(--sp-text-xs);
+  line-height: 1.4;
+}
+
+.field-message__error {
+  color: var(--sp-danger);
+  font-weight: 500;
+}
+
+.field-message__hint,
+.field-message__pending {
+  color: var(--sp-text-muted);
+}
