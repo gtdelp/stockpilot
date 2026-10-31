@@ -1,0 +1,166 @@
+<div class="modal">
+  <header class="modal__header">
+    <h2 id="product-form-title">{{ product() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+    <ion-button fill="clear" color="medium" (click)="cancel()" aria-label="Cerrar">
+      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+    </ion-button>
+  </header>
+
+  <form
+    class="modal__body"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+    aria-labelledby="product-form-title"
+    id="product-form"
+  >
+    @if (serverError()) {
+      <div class="sp-alert sp-alert--error" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <span>{{ serverError() }}</span>
+      </div>
+    }
+    <div class="sp-form-grid">
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="sku"
+          label="SKU"
+          labelPlacement="stacked"
+          fill="outline"
+          placeholder="ELE-0001"
+          autocapitalize="characters"
+          aria-describedby="pf-sku-msg"
+          [required]="true"
+          (ionInput)="upperSku()"
+        ></ion-input>
+        <app-field-error
+          [control]="form.controls.sku"
+          id="pf-sku-msg"
+          hint="Se comprueba que no esté repetido."
+        />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="name"
+          label="Nombre"
+          labelPlacement="stacked"
+          fill="outline"
+          aria-describedby="pf-name-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error [control]="form.controls.name" id="pf-name-msg" />
+      </div>
+      <div>
+        <ion-select
+          class="sp-input"
+          formControlName="categoryId"
+          label="Categoría"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          placeholder="Selecciona…"
+          aria-describedby="pf-category-msg"
+        >
+          @for (category of categories(); track category.id) {
+            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+          }
+        </ion-select>
+        <app-field-error
+          [control]="form.controls.categoryId"
+          id="pf-category-msg"
+          [messages]="{ min: 'Selecciona una categoría.' }"
+        />
+      </div>
+      <div>
+        <ion-select
+          class="sp-input"
+          formControlName="supplierId"
+          label="Proveedor"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          placeholder="Selecciona…"
+          aria-describedby="pf-supplier-msg"
+        >
+          @for (supplier of suppliers(); track supplier.id) {
+            <ion-select-option [value]="supplier.id">{{ supplier.name }}</ion-select-option>
+          }
+        </ion-select>
+        <app-field-error
+          [control]="form.controls.supplierId"
+          id="pf-supplier-msg"
+          [messages]="{ min: 'Selecciona un proveedor.' }"
+        />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="price"
+          type="number"
+          inputmode="decimal"
+          step="0.01"
+          min="0"
+          label="Precio (€)"
+          labelPlacement="stacked"
+          fill="outline"
+          aria-describedby="pf-price-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error [control]="form.controls.price" id="pf-price-msg" />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="stock"
+          type="number"
+          inputmode="numeric"
+          step="1"
+          min="0"
+          label="Stock (unidades)"
+          labelPlacement="stacked"
+          fill="outline"
+          aria-describedby="pf-stock-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error [control]="form.controls.stock" id="pf-stock-msg" />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="minStock"
+          type="number"
+          inputmode="numeric"
+          step="1"
+          min="0"
+          label="Stock mínimo"
+          labelPlacement="stacked"
+          fill="outline"
+          aria-describedby="pf-min-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error
+          [control]="form.controls.minStock"
+          id="pf-min-msg"
+          hint="Por debajo se marcará como stock bajo."
+        />
+      </div>
+      <div class="toggle-field">
+        <ion-toggle formControlName="active" labelPlacement="end" justify="start"
+          >Producto activo (visible en el catálogo)</ion-toggle
+        >
+      </div>
+    </div>
+  </form>
+
+  <footer class="modal__footer">
+    <ion-button fill="outline" color="medium" (click)="cancel()">Cancelar</ion-button>
+    <ion-button type="submit" form="product-form" [disabled]="saving()">
+      @if (saving()) {
+        <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+      }
+      {{ product() ? 'Guardar cambios' : 'Crear producto' }}
+    </ion-button>
+  </footer>
+</div>

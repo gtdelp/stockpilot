@@ -1,0 +1,240 @@
+<div class="dt">
+  @if (searchable()) {
+    <div class="dt__toolbar">
+      <div class="dt__search">
+        <label class="visually-hidden" [for]="uid + '-search'">{{ searchPlaceholder() }}</label>
+        <ion-icon name="search-outline" aria-hidden="true" class="dt__search-icon"></ion-icon>
+        <input
+          type="search"
+          class="dt__search-input"
+          [id]="uid + '-search'"
+          [placeholder]="searchPlaceholder()"
+          [value]="draft()"
+          (input)="onSearchInput($event)"
+          autocomplete="off"
+          enterkeyhint="search"
+        />
+        @if (draft()) {
+          <button
+            type="button"
+            class="dt__clear"
+            (click)="clearSearch()"
+            aria-label="Limpiar búsqueda"
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        }
+      </div>
+      <p class="dt__count" aria-hidden="true">{{ rangeLabel() }}</p>
+    </div>
+  }
+
+  <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ announcement() }}</p>
+
+  @if (loading()) {
+    <div class="dt__skeleton" aria-hidden="true">
+      @for (row of skeletonRows; track row) {
+        <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+      }
+    </div>
+  } @else if (!sorted().length) {
+    <div class="dt__empty">
+      <span class="dt__empty-icon" aria-hidden="true"
+        ><ion-icon name="file-tray-outline"></ion-icon
+      ></span>
+      <p class="dt__empty-title">{{ emptyTitle() }}</p>
+      <p class="dt__empty-message">{{ emptyMessage() }}</p>
+    </div>
+  } @else {
+    <!-- Vista de tabla (tablet y escritorio) -->
+    <div class="dt__table-wrap">
+      <table class="dt__table">
+        <caption class="visually-hidden">
+          {{
+            caption()
+          }}
+        </caption>
+        <thead>
+          <tr>
+            @if (selectable()) {
+              <th scope="col" class="dt__check">
+                <input
+                  type="checkbox"
+                  [checked]="allPageSelected()"
+                  (change)="togglePage()"
+                  aria-label="Seleccionar todas las filas de la página"
+                />
+              </th>
+            }
+            @for (column of columns(); track column.key) {
+              <th scope="col" [attr.aria-sort]="ariaSort(column)" [class.num]="isNumeric(column)">
+                @if (column.sortable) {
+                  <button type="button" class="dt__sort" (click)="toggleSort(column)">
+                    {{ column.header }}
+                    <ion-icon
+                      aria-hidden="true"
+                      [name]="
+                        sort()?.key === column.key
+                          ? sort()?.direction === 'asc'
+                            ? 'arrow-up-outline'
+                            : 'arrow-down-outline'
+                          : 'swap-vertical-outline'
+                      "
+                      [class.dt__sort-icon--idle]="sort()?.key !== column.key"
+                    ></ion-icon>
+                  </button>
+                } @else {
+                  {{ column.header }}
+                }
+              </th>
+            }
+            @if (actions().length) {
+              <th scope="col" class="dt__actions-head">
+                <span class="visually-hidden">Acciones</span>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of paged(); track rowKey()(row)) {
+            <tr
+              [class.dt__row--clickable]="clickable()"
+              [class.dt__row--selected]="isSelected(row)"
+              [attr.tabindex]="clickable() ? 0 : null"
+              [attr.aria-label]="
+                clickable() ? 'Ver detalle de ' + display(primaryColumn()!, row) : null
+              "
+              (click)="activate(row)"
+              (keydown.enter)="activate(row)"
+            >
+              @if (selectable()) {
+                <td class="dt__check" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    [checked]="isSelected(row)"
+                    (change)="toggleRow(row)"
+                    [attr.aria-label]="'Seleccionar ' + display(primaryColumn()!, row)"
+                  />
+                </td>
+              }
+              @for (column of columns(); track column.key) {
+                <td [class.num]="isNumeric(column)" [class.dt__cell--primary]="column.primary">
+                  @if (column.type === 'badge' && column.badge?.(row); as badge) {
+                    <span [class]="'sp-badge sp-badge--' + badge.variant">{{ badge.label }}</span>
+                  } @else {
+                    {{ display(column, row) }}
+                  }
+                </td>
+              }
+              @if (actions().length) {
+                <td class="dt__actions">
+                  @for (action of visibleActions(row); track action.id) {
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      [color]="action.color ?? 'medium'"
+                      (click)="runAction($event, action, row)"
+                      (keydown.enter)="$event.stopPropagation()"
+                      [attr.aria-label]="action.label + ': ' + display(primaryColumn()!, row)"
+                    >
+                      <ion-icon slot="icon-only" [name]="action.icon" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Vista de tarjetas (móvil) -->
+    <ul class="dt__cards" [attr.aria-label]="caption()">
+      @for (row of paged(); track rowKey()(row)) {
+        <li class="dt__card" [class.dt__row--selected]="isSelected(row)">
+          <div class="dt__card-head">
+            @if (selectable()) {
+              <input
+                type="checkbox"
+                [checked]="isSelected(row)"
+                (change)="toggleRow(row)"
+                [attr.aria-label]="'Seleccionar ' + display(primaryColumn()!, row)"
+              />
+            }
+            @if (clickable()) {
+              <button
+                type="button"
+                class="dt__card-title dt__card-title--link"
+                (click)="activate(row)"
+              >
+                {{ display(primaryColumn()!, row) }}
+              </button>
+            } @else {
+              <p class="dt__card-title">{{ display(primaryColumn()!, row) }}</p>
+            }
+          </div>
+          <dl class="dt__card-fields">
+            @for (column of columns(); track column.key) {
+              @if (!column.primary && !column.hideOnMobile) {
+                <div class="dt__card-field">
+                  <dt>{{ column.header }}</dt>
+                  <dd>
+                    @if (column.type === 'badge' && column.badge?.(row); as badge) {
+                      <span [class]="'sp-badge sp-badge--' + badge.variant">{{ badge.label }}</span>
+                    } @else {
+                      {{ display(column, row) }}
+                    }
+                  </dd>
+                </div>
+              }
+            }
+          </dl>
+          @if (visibleActions(row).length) {
+            <div class="dt__card-actions">
+              @for (action of visibleActions(row); track action.id) {
+                <ion-button
+                  fill="outline"
+                  size="small"
+                  [color]="action.color ?? 'medium'"
+                  (click)="runAction($event, action, row)"
+                  [attr.aria-label]="action.label + ': ' + display(primaryColumn()!, row)"
+                >
+                  <ion-icon slot="start" [name]="action.icon" aria-hidden="true"></ion-icon>
+                  {{ action.label }}
+                </ion-button>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+
+    @if (pageCount() > 1) {
+      <nav class="dt__pagination" [attr.aria-label]="'Paginación de ' + caption()">
+        <ion-button
+          fill="outline"
+          color="medium"
+          size="small"
+          [disabled]="page() === 1"
+          (click)="goTo(page() - 1)"
+        >
+          <ion-icon slot="start" name="chevron-back-outline" aria-hidden="true"></ion-icon>
+          Anterior
+        </ion-button>
+        <span class="dt__page-label" aria-current="page"
+          >Página {{ page() }} de {{ pageCount() }}</span
+        >
+        <ion-button
+          fill="outline"
+          color="medium"
+          size="small"
+          [disabled]="page() === pageCount()"
+          (click)="goTo(page() + 1)"
+        >
+          Siguiente
+          <ion-icon slot="end" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </nav>
+    }
+  }
+</div>

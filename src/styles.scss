@@ -1,0 +1,424 @@
+// Ionic: estilos base
+@use '@ionic/angular/css/core.css';
+@use '@ionic/angular/css/normalize.css';
+@use '@ionic/angular/css/structure.css';
+@use '@ionic/angular/css/typography.css';
+@use '@ionic/angular/css/display.css';
+@use '@ionic/angular/css/flex-utils.css';
+
+// Tipografía Inter autoalojada (sin peticiones a terceros)
+@use '@fontsource/inter/latin-400.css';
+@use '@fontsource/inter/latin-500.css';
+@use '@fontsource/inter/latin-600.css';
+@use '@fontsource/inter/latin-700.css';
+
+// Tokens de diseño
+@use 'theme/variables';
+
+// =============================================================
+// Base
+// =============================================================
+html {
+  font-size: 100%; // respeta el tamaño elegido por el usuario
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--sp-font);
+  color: var(--sp-text);
+  background: var(--sp-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--sp-text);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+p {
+  line-height: 1.55;
+}
+
+a {
+  color: var(--sp-primary);
+}
+
+// Foco visible y consistente en toda la app
+:focus-visible {
+  outline: 2px solid var(--sp-primary);
+  outline-offset: 2px;
+}
+
+ion-button,
+ion-item,
+ion-chip,
+ion-segment-button {
+  &.ion-focused,
+  &:focus-visible {
+    outline: 2px solid var(--sp-primary);
+    outline-offset: 2px;
+    border-radius: var(--sp-radius-sm);
+  }
+}
+
+// Enlace "Saltar al contenido"
+.skip-link {
+  position: absolute;
+  top: var(--sp-space-2);
+  left: var(--sp-space-2);
+  z-index: 10000;
+  padding: var(--sp-space-2) var(--sp-space-4);
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-primary);
+  color: var(--ion-color-primary-contrast);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--sp-transition);
+
+  &:focus {
+    transform: translateY(0);
+  }
+}
+
+// Solo para lectores de pantalla
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// =============================================================
+// Layout de páginas
+// =============================================================
+.sp-page {
+  width: 100%;
+  max-width: var(--sp-content-max);
+  margin: 0 auto;
+  padding: var(--sp-space-4);
+
+  @media (min-width: 768px) {
+    padding: var(--sp-space-5) var(--sp-space-6);
+  }
+}
+
+.sp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-4);
+
+  @media (min-width: 768px) {
+    gap: var(--sp-space-5);
+  }
+}
+
+.sp-card {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow-sm);
+  padding: var(--sp-space-4);
+
+  @media (min-width: 768px) {
+    padding: var(--sp-space-5);
+  }
+}
+
+.sp-card__title {
+  font-size: var(--sp-text-lg);
+  font-weight: 600;
+  margin-bottom: var(--sp-space-3);
+}
+
+// Barra de filtros responsive
+.sp-filters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-space-3);
+  align-items: end;
+
+  @media (min-width: 576px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+// Rejilla de formularios
+.sp-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-space-4);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .sp-form-grid__full {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// Campos de formulario Ionic con estilo homogéneo
+ion-input.sp-input,
+ion-select.sp-input,
+ion-textarea.sp-input {
+  --background: var(--sp-surface);
+  --border-color: var(--sp-border-strong);
+  --border-radius: var(--sp-radius-sm);
+  --highlight-color-focused: var(--sp-primary);
+  --highlight-color-invalid: var(--sp-danger);
+  --placeholder-color: var(--ion-placeholder-color);
+  --placeholder-opacity: 1;
+  --color: var(--sp-text);
+  font-size: var(--sp-text-md);
+}
+
+// Los placeholders de Ionic usan opacidad 0.6 por defecto: se fuerza el contraste AA
+ion-select.sp-input::part(placeholder) {
+  color: var(--ion-placeholder-color);
+  opacity: 1;
+}
+
+.sp-label {
+  display: block;
+  font-size: var(--sp-text-sm);
+  font-weight: 600;
+  color: var(--sp-text);
+  margin-bottom: var(--sp-space-1);
+}
+
+.sp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-space-2);
+}
+
+ion-button {
+  --border-radius: var(--sp-radius-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  min-height: 44px; // objetivo táctil mínimo
+}
+
+// =============================================================
+// Badges de estado
+// =============================================================
+.sp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-space-1);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: var(--sp-text-xs);
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+
+  &--pending {
+    background: var(--sp-warning-soft);
+    color: var(--sp-warning);
+  }
+
+  &--processing {
+    background: var(--sp-info-soft);
+    color: var(--sp-info);
+  }
+
+  &--shipped {
+    background: var(--sp-success-soft);
+    color: var(--sp-success);
+  }
+
+  &--cancelled {
+    background: var(--sp-danger-soft);
+    color: var(--sp-danger);
+  }
+
+  &--neutral {
+    background: var(--sp-surface-2);
+    color: var(--sp-text-muted);
+  }
+
+  &--primary {
+    background: var(--sp-primary-soft);
+    color: var(--sp-primary-soft-text);
+  }
+}
+
+// =============================================================
+// Overlays Ionic
+// =============================================================
+ion-modal.sp-modal {
+  --border-radius: var(--sp-radius-lg);
+  --max-width: 720px;
+  --width: 100%;
+
+  @media (min-width: 768px) {
+    --height: auto;
+    --max-height: 90vh;
+  }
+}
+
+ion-toast.sp-toast {
+  --border-radius: var(--sp-radius-sm);
+  --box-shadow: var(--sp-shadow);
+  font-weight: 500;
+}
+
+// =============================================================
+// Movimiento reducido
+// =============================================================
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// =============================================================
+// Estructura común de diálogos (ion-modal)
+// Pantalla completa en móvil; altura automática en escritorio.
+// =============================================================
+.modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--sp-surface);
+  color: var(--sp-text);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-space-3);
+  padding: var(--sp-space-3) var(--sp-space-4) var(--sp-space-3) var(--sp-space-5);
+  border-bottom: 1px solid var(--sp-border);
+
+  h2 {
+    font-size: var(--sp-text-lg);
+    font-weight: 600;
+  }
+}
+
+.modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-space-5);
+}
+
+.modal__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-space-2);
+  padding: var(--sp-space-3) var(--sp-space-5);
+  border-top: 1px solid var(--sp-border);
+  background: var(--sp-surface);
+}
+
+@media (min-width: 768px) {
+  ion-modal.sp-modal {
+    --height: auto;
+
+    .ion-page {
+      position: relative;
+      display: block;
+      contain: content;
+    }
+
+    .modal {
+      height: auto;
+      max-height: 90vh;
+    }
+  }
+
+  ion-modal.sp-modal--compact {
+    --max-width: 460px;
+  }
+}
+
+ion-modal.sp-modal--compact {
+  --height: auto;
+  --width: calc(100% - 32px);
+  --max-width: 460px;
+
+  .ion-page {
+    position: relative;
+    display: block;
+    contain: content;
+  }
+
+  .modal {
+    height: auto;
+  }
+}
+
+// Contenedor de página enrutada (ocupa todo el alto disponible)
+.sp-page-host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  > ion-content {
+    flex: 1;
+  }
+}
+
+// Avisos en línea
+.sp-alert {
+  display: flex;
+  gap: var(--sp-space-2);
+  align-items: flex-start;
+  padding: var(--sp-space-3) var(--sp-space-4);
+  border-radius: var(--sp-radius-sm);
+  font-size: var(--sp-text-sm);
+  line-height: 1.45;
+
+  ion-icon {
+    flex: none;
+    font-size: 20px;
+    margin-top: 1px;
+  }
+
+  &--error {
+    background: var(--sp-danger-soft);
+    color: var(--sp-danger);
+  }
+
+  &--info {
+    background: var(--sp-info-soft);
+    color: var(--sp-info);
+  }
+
+  &--warning {
+    background: var(--sp-warning-soft);
+    color: var(--sp-warning);
+  }
+}
+
+.toggle-field {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+}

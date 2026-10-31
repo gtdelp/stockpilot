@@ -1,0 +1,252 @@
+// =============================================================
+// Design tokens de StockPilot
+// Todos los pares texto/fondo cumplen WCAG 2.2 AA (>= 4.5:1).
+// =============================================================
+
+:root {
+  // --- Marca (índigo) ---
+  --sp-primary: #4338ca; // 7.9:1 sobre blanco
+  --sp-primary-hover: #3730a3;
+  --sp-primary-soft: #eef2ff;
+  --sp-primary-soft-text: #3730a3;
+
+  // --- Neutros (slate) ---
+  --sp-bg: #f8fafc;
+  --sp-surface: #ffffff;
+  --sp-surface-2: #f1f5f9;
+  --sp-border: #e2e8f0;
+  --sp-border-strong: #94a3b8; // 3:1 para bordes de controles
+  --sp-text: #0f172a;
+  --sp-text-muted: #475569; // 7.2:1 sobre --sp-bg
+
+  // --- Estados (versiones de texto con contraste AA) ---
+  --sp-success: #047857;
+  --sp-success-soft: #ecfdf5;
+  --sp-warning: #a16207;
+  --sp-warning-soft: #fefce8;
+  --sp-danger: #b91c1c;
+  --sp-danger-soft: #fef2f2;
+  --sp-info: #1d4ed8;
+  --sp-info-soft: #eff6ff;
+
+  // --- Gráficos ---
+  --sp-chart-1: #4338ca;
+  --sp-chart-2: #0e7490;
+  --sp-chart-3: #b45309;
+  --sp-chart-4: #be185d;
+  --sp-chart-5: #15803d;
+  --sp-chart-6: #6d28d9;
+  --sp-chart-grid: #e2e8f0;
+
+  // --- Tipografía ---
+  --sp-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sp-text-xs: 0.75rem;
+  --sp-text-sm: 0.875rem;
+  --sp-text-md: 1rem;
+  --sp-text-lg: 1.125rem;
+  --sp-text-xl: 1.375rem;
+  --sp-text-2xl: 1.75rem;
+
+  // --- Espaciado (múltiplos de 4px) ---
+  --sp-space-1: 0.25rem;
+  --sp-space-2: 0.5rem;
+  --sp-space-3: 0.75rem;
+  --sp-space-4: 1rem;
+  --sp-space-5: 1.5rem;
+  --sp-space-6: 2rem;
+  --sp-space-7: 3rem;
+
+  // --- Formas y profundidad ---
+  --sp-radius-sm: 8px;
+  --sp-radius: 12px;
+  --sp-radius-lg: 16px;
+  --sp-shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+  --sp-shadow: 0 1px 3px rgb(15 23 42 / 8%), 0 4px 12px rgb(15 23 42 / 4%);
+  --sp-focus: 0 0 0 3px rgb(67 56 202 / 45%);
+  --sp-transition: 160ms ease;
+  --sp-content-max: 1280px;
+
+  // --- Mapeo a Ionic ---
+  --ion-font-family: var(--sp-font);
+  --ion-background-color: var(--sp-bg);
+  --ion-background-color-rgb: 248, 250, 252;
+  --ion-text-color: var(--sp-text);
+  --ion-text-color-rgb: 15, 23, 42;
+  --ion-border-color: var(--sp-border);
+  --ion-item-background: var(--sp-surface);
+  --ion-card-background: var(--sp-surface);
+  --ion-toolbar-background: var(--sp-surface);
+  --ion-toolbar-color: var(--sp-text);
+  --ion-toolbar-border-color: var(--sp-border);
+  --ion-tab-bar-background: var(--sp-surface);
+  --ion-placeholder-color: #64748b;
+
+  --ion-color-primary: #4338ca;
+  --ion-color-primary-rgb: 67, 56, 202;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #3b31b2;
+  --ion-color-primary-tint: #564ccf;
+
+  --ion-color-secondary: #0e7490;
+  --ion-color-secondary-rgb: 14, 116, 144;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #0c667f;
+  --ion-color-secondary-tint: #26829b;
+
+  --ion-color-success: #047857;
+  --ion-color-success-rgb: 4, 120, 87;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #046a4d;
+  --ion-color-success-tint: #1d8668;
+
+  --ion-color-warning: #a16207;
+  --ion-color-warning-rgb: 161, 98, 7;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #8e5606;
+  --ion-color-warning-tint: #aa7220;
+
+  --ion-color-danger: #b91c1c;
+  --ion-color-danger-rgb: 185, 28, 28;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #a31919;
+  --ion-color-danger-tint: #c03333;
+
+  --ion-color-medium: #475569;
+  --ion-color-medium-rgb: 71, 85, 105;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #3e4b5c;
+  --ion-color-medium-tint: #596678;
+
+  --ion-color-light: #f1f5f9;
+  --ion-color-light-rgb: 241, 245, 249;
+  --ion-color-light-contrast: #0f172a;
+  --ion-color-light-contrast-rgb: 15, 23, 42;
+  --ion-color-light-shade: #d4d8db;
+  --ion-color-light-tint: #f2f6fa;
+
+  color-scheme: light;
+}
+
+// -------------------------------------------------------------
+// Modo oscuro (clase aplicada por ThemeService en <html>)
+// -------------------------------------------------------------
+:root.ion-palette-dark {
+  --sp-primary: #a5b4fc; // 9.6:1 sobre --sp-surface
+  --sp-primary-hover: #c7d2fe;
+  --sp-primary-soft: #1e1b4b;
+  --sp-primary-soft-text: #c7d2fe;
+
+  --sp-bg: #0b1120;
+  --sp-surface: #111827;
+  --sp-surface-2: #1e293b;
+  --sp-border: #273449;
+  --sp-border-strong: #64748b;
+  --sp-text: #e2e8f0;
+  --sp-text-muted: #a3b1c6; // 8:1 sobre --sp-surface
+
+  --sp-success: #6ee7b7;
+  --sp-success-soft: #052e22;
+  --sp-warning: #fcd34d;
+  --sp-warning-soft: #2e2205;
+  --sp-danger: #fca5a5;
+  --sp-danger-soft: #3b0d0d;
+  --sp-info: #93c5fd;
+  --sp-info-soft: #0b1d3d;
+
+  --sp-chart-1: #a5b4fc;
+  --sp-chart-2: #67e8f9;
+  --sp-chart-3: #fcd34d;
+  --sp-chart-4: #f9a8d4;
+  --sp-chart-5: #86efac;
+  --sp-chart-6: #c4b5fd;
+  --sp-chart-grid: #273449;
+
+  --sp-shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+  --sp-shadow: 0 1px 3px rgb(0 0 0 / 45%), 0 4px 12px rgb(0 0 0 / 25%);
+  --sp-focus: 0 0 0 3px rgb(165 180 252 / 55%);
+
+  --ion-background-color: var(--sp-bg);
+  --ion-background-color-rgb: 11, 17, 32;
+  --ion-text-color: var(--sp-text);
+  --ion-text-color-rgb: 226, 232, 240;
+  --ion-border-color: var(--sp-border);
+  --ion-item-background: var(--sp-surface);
+  --ion-card-background: var(--sp-surface);
+  --ion-toolbar-background: var(--sp-surface);
+  --ion-toolbar-color: var(--sp-text);
+  --ion-toolbar-border-color: var(--sp-border);
+  --ion-placeholder-color: #8796ad;
+
+  // Escala de grises de Ionic para superficies oscuras
+  --ion-color-step-50: #151d2c;
+  --ion-color-step-100: #1b2435;
+  --ion-color-step-150: #212b3e;
+  --ion-color-step-200: #273247;
+  --ion-color-step-250: #2e3950;
+  --ion-color-step-300: #354159;
+  --ion-color-step-400: #46536d;
+  --ion-color-step-500: #5b6882;
+  --ion-color-step-600: #75829a;
+  --ion-color-step-700: #929eb2;
+  --ion-color-step-800: #b1bbcb;
+  --ion-color-step-850: #c2cad7;
+  --ion-color-step-900: #d3d9e3;
+  --ion-color-step-950: #e2e8f0;
+
+  --ion-color-primary: #a5b4fc;
+  --ion-color-primary-rgb: 165, 180, 252;
+  --ion-color-primary-contrast: #111827;
+  --ion-color-primary-contrast-rgb: 17, 24, 39;
+  --ion-color-primary-shade: #919ede;
+  --ion-color-primary-tint: #aebcfc;
+
+  --ion-color-secondary: #67e8f9;
+  --ion-color-secondary-rgb: 103, 232, 249;
+  --ion-color-secondary-contrast: #111827;
+  --ion-color-secondary-contrast-rgb: 17, 24, 39;
+  --ion-color-secondary-shade: #5bccdb;
+  --ion-color-secondary-tint: #76eafa;
+
+  --ion-color-success: #6ee7b7;
+  --ion-color-success-rgb: 110, 231, 183;
+  --ion-color-success-contrast: #111827;
+  --ion-color-success-contrast-rgb: 17, 24, 39;
+  --ion-color-success-shade: #61cba1;
+  --ion-color-success-tint: #7de9be;
+
+  --ion-color-warning: #fcd34d;
+  --ion-color-warning-rgb: 252, 211, 77;
+  --ion-color-warning-contrast: #111827;
+  --ion-color-warning-contrast-rgb: 17, 24, 39;
+  --ion-color-warning-shade: #deba44;
+  --ion-color-warning-tint: #fcd75f;
+
+  --ion-color-danger: #fca5a5;
+  --ion-color-danger-rgb: 252, 165, 165;
+  --ion-color-danger-contrast: #111827;
+  --ion-color-danger-contrast-rgb: 17, 24, 39;
+  --ion-color-danger-shade: #de9191;
+  --ion-color-danger-tint: #fcaeae;
+
+  --ion-color-medium: #a3b1c6;
+  --ion-color-medium-rgb: 163, 177, 198;
+  --ion-color-medium-contrast: #111827;
+  --ion-color-medium-contrast-rgb: 17, 24, 39;
+  --ion-color-medium-shade: #8f9cae;
+  --ion-color-medium-tint: #acb9cc;
+
+  --ion-color-light: #1e293b;
+  --ion-color-light-rgb: 30, 41, 59;
+  --ion-color-light-contrast: #e2e8f0;
+  --ion-color-light-contrast-rgb: 226, 232, 240;
+  --ion-color-light-shade: #1a2434;
+  --ion-color-light-tint: #353e4f;
+
+  color-scheme: dark;
+}

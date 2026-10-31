@@ -1,0 +1,194 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      title="Cuadro de mando"
+      subtitle="Visión consolidada de ventas, pedidos e inventario."
+      (helpRequested)="help.open('panel')"
+    >
+      <app-export-menu
+        label="Exportar informe del cuadro de mando"
+        [disabled]="store.initialLoading() || !salesByMonth().length"
+        [busy]="exporting()"
+        (exportCsv)="exportCsv()"
+        (exportPdf)="exportPdf()"
+      />
+    </app-page-header>
+
+    <!-- Filtros en tiempo real -->
+    <section class="sp-card" aria-labelledby="filters-title">
+      <div class="filters-head">
+        <h2 id="filters-title" class="sp-card__title">Filtros</h2>
+        @if (hasFilters()) {
+          <ion-button fill="clear" size="small" (click)="resetFilters()">
+            <ion-icon slot="start" name="refresh-outline" aria-hidden="true"></ion-icon>
+            Restablecer
+          </ion-button>
+        }
+      </div>
+      <div class="sp-filters">
+        <ion-input
+          class="sp-input"
+          type="date"
+          label="Desde"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="from"
+          [max]="to()"
+        ></ion-input>
+        <ion-input
+          class="sp-input"
+          type="date"
+          label="Hasta"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="to"
+          [min]="from()"
+        ></ion-input>
+        <ion-select
+          class="sp-input"
+          label="Categoría"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [(ngModel)]="categoryId"
+        >
+          <ion-select-option [value]="null">Todas</ion-select-option>
+          @for (category of categories(); track category.id) {
+            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-select
+          class="sp-input"
+          label="Estado del pedido"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [(ngModel)]="status"
+        >
+          <ion-select-option [value]="null">Todos (sin cancelados)</ion-select-option>
+          @for (option of statuses; track option.value) {
+            <ion-select-option [value]="option.value">{{ option.label }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+      <p class="filters-status" aria-live="polite">
+        @if (store.loading() && !store.initialLoading()) {
+          Actualizando datos…
+        }
+      </p>
+    </section>
+
+    @if (store.error()) {
+      <div class="sp-card">
+        <app-empty-state
+          tone="error"
+          icon="cloud-offline-outline"
+          title="No se han podido cargar los datos"
+          [message]="store.error() ?? ''"
+        >
+          <ion-button (click)="retry()">
+            <ion-icon slot="start" name="refresh-outline" aria-hidden="true"></ion-icon>
+            Reintentar
+          </ion-button>
+        </app-empty-state>
+      </div>
+    } @else {
+      <!-- Indicadores -->
+      <section aria-label="Indicadores clave" class="kpis" [attr.aria-busy]="store.loading()">
+        <app-kpi-card
+          label="Ventas del periodo"
+          icon="cash-outline"
+          format="currency"
+          caption="vs. periodo anterior"
+          [value]="kpis()?.revenue ?? 0"
+          [previous]="kpis()?.revenuePrev ?? null"
+          [loading]="store.initialLoading()"
+        />
+        <app-kpi-card
+          label="Pedidos pendientes"
+          icon="time-outline"
+          caption="Pulsa para filtrar"
+          [value]="kpis()?.pendingOrders ?? 0"
+          [loading]="store.initialLoading()"
+          [selectable]="true"
+          [active]="status() === 'pending'"
+          (selected)="togglePending()"
+        />
+        <app-kpi-card
+          label="Productos con stock bajo"
+          icon="warning-outline"
+          caption="Por debajo del mínimo"
+          [value]="kpis()?.lowStock ?? 0"
+          [loading]="store.initialLoading()"
+        />
+        <app-kpi-card
+          label="Ticket medio"
+          icon="receipt-outline"
+          format="currency"
+          caption="vs. periodo anterior"
+          [value]="kpis()?.avgTicket ?? 0"
+          [previous]="kpis()?.avgTicketPrev ?? null"
+          [loading]="store.initialLoading()"
+        />
+      </section>
+
+      <div class="layout">
+        <div class="charts">
+          <app-chart-card
+            class="charts__wide"
+            title="Ventas por mes"
+            description="Facturación mensual del periodo seleccionado."
+            type="line"
+            seriesLabel="Ventas"
+            valueFormat="currency"
+            [data]="salesByMonth()"
+            [loading]="store.initialLoading()"
+            [dark]="theme.isDark()"
+          />
+          <app-chart-card
+            title="Pedidos por estado"
+            description="Número de pedidos del periodo."
+            type="bar"
+            seriesLabel="Pedidos"
+            [data]="ordersByStatus()"
+            [loading]="store.initialLoading()"
+            [interactive]="true"
+            [activeKey]="status()"
+            [dark]="theme.isDark()"
+            (segmentSelected)="selectStatus($event)"
+          />
+          <app-chart-card
+            title="Stock por categoría"
+            description="Unidades disponibles de productos activos."
+            type="doughnut"
+            seriesLabel="Unidades"
+            [data]="stockByCategory()"
+            [loading]="store.initialLoading()"
+            [interactive]="true"
+            [activeKey]="categoryId()"
+            [dark]="theme.isDark()"
+            (segmentSelected)="selectCategory($event)"
+          />
+          <app-chart-card
+            class="charts__wide"
+            title="Productos más vendidos"
+            description="Top 5 por facturación en el periodo."
+            type="bar"
+            seriesLabel="Ventas"
+            valueFormat="currency"
+            [horizontal]="true"
+            [data]="topProducts()"
+            [loading]="store.initialLoading()"
+            [dark]="theme.isDark()"
+          />
+        </div>
+        <app-activity-feed
+          class="layout__feed"
+          [events]="activity()"
+          [loading]="activityLoading()"
+          [connected]="realtimeConnected()"
+        />
+      </div>
+    }
+  </div>
+</ion-content>

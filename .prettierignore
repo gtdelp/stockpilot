@@ -1,0 +1,17 @@
+www
+documentation
+coverage
+playwright-report
+test-results
+node_modules
+package-lock.json
+src/environments/environment.ts
+.angular
+.lighthouseci
+lighthouse
+.lighthouseci
+.vercel
+test-results
+playwright-report
+docs/img
+CHANGELOG.md

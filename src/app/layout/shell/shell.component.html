@@ -1,0 +1,157 @@
+<ion-split-pane contentId="main-content" when="lg">
+  <ion-menu contentId="main-content" menuId="main-menu" type="overlay" aria-label="Menú principal">
+    <ion-content class="menu">
+      <div class="menu__inner">
+        <a class="brand" routerLink="/">
+          <span class="brand__logo" aria-hidden="true">SP</span>
+          <span class="brand__text">
+            <span class="brand__name">StockPilot</span>
+            <span class="brand__tagline">Inventario y pedidos</span>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="Navegación principal">
+          <p class="nav__heading" id="nav-main">Gestión</p>
+          <ul aria-labelledby="nav-main">
+            @for (item of navItems(); track item.url) {
+              <li>
+                <ion-menu-toggle [autoHide]="false">
+                  <a
+                    class="nav__link"
+                    [routerLink]="item.url"
+                    routerLinkActive="nav__link--active"
+                    ariaCurrentWhenActive="page"
+                  >
+                    <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+                    <span>{{ item.label }}</span>
+                  </a>
+                </ion-menu-toggle>
+              </li>
+            }
+          </ul>
+          <p class="nav__heading" id="nav-account">Cuenta</p>
+          <ul aria-labelledby="nav-account">
+            @for (item of secondaryItems(); track item.url) {
+              <li>
+                <ion-menu-toggle [autoHide]="false">
+                  <a
+                    class="nav__link"
+                    [routerLink]="item.url"
+                    routerLinkActive="nav__link--active"
+                    ariaCurrentWhenActive="page"
+                  >
+                    <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+                    <span>{{ item.label }}</span>
+                  </a>
+                </ion-menu-toggle>
+              </li>
+            }
+          </ul>
+        </nav>
+
+        <div class="menu__footer">
+          <div class="user-card">
+            <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+            <span class="user-card__text">
+              <span class="user-card__name">{{ auth.profile()?.fullName }}</span>
+              <span class="user-card__role">{{ roleLabel() }}</span>
+            </span>
+          </div>
+          <ion-button expand="block" fill="outline" color="medium" (click)="logout()">
+            <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+            Cerrar sesión
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ion-menu>
+
+  <div class="ion-page" id="main-content">
+    <ion-header class="topbar ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button menu="main-menu" aria-label="Abrir menú de navegación"></ion-menu-button>
+        </ion-buttons>
+        <a class="topbar__brand" routerLink="/">
+          <span class="brand__logo brand__logo--small" aria-hidden="true">SP</span>
+          <span class="topbar__brand-name">StockPilot</span>
+        </a>
+        <ion-buttons slot="end">
+          @if (demoMode) {
+            <span class="demo-pill" title="Datos sintéticos en memoria">Modo demo</span>
+          }
+          <ion-button
+            (click)="theme.toggle()"
+            [attr.aria-label]="theme.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
+          >
+            <ion-icon
+              slot="icon-only"
+              [name]="theme.isDark() ? 'sunny-outline' : 'moon-outline'"
+              aria-hidden="true"
+            ></ion-icon>
+          </ion-button>
+          <ion-button
+            id="notifications-trigger"
+            [attr.aria-label]="
+              unread() ? 'Notificaciones, ' + unread() + ' sin leer' : 'Notificaciones'
+            "
+          >
+            <ion-icon slot="icon-only" name="notifications-outline" aria-hidden="true"></ion-icon>
+            @if (unread()) {
+              <ion-badge color="danger" class="notif-badge" aria-hidden="true">{{
+                unread()
+              }}</ion-badge>
+            }
+          </ion-button>
+          <a class="avatar avatar--link" routerLink="/perfil">
+            <span aria-hidden="true">{{ initials() }}</span>
+            <span class="visually-hidden">Mi perfil</span>
+          </a>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-popover
+      trigger="notifications-trigger"
+      triggerAction="click"
+      alignment="end"
+      class="notif-popover"
+    >
+      <ng-template>
+        <div class="notif" role="dialog" aria-labelledby="notif-title">
+          <h2 id="notif-title" class="notif__title">Notificaciones</h2>
+          @if (notifications().length) {
+            <ul class="notif__list" aria-live="polite">
+              @for (item of notifications(); track item.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="notif__item"
+                    [class.notif__item--unread]="!item.read"
+                    (click)="markAsRead(item)"
+                  >
+                    <span class="notif__item-title">
+                      @if (!item.read) {
+                        <span class="notif__dot" aria-hidden="true"></span>
+                        <span class="visually-hidden">Sin leer:</span>
+                      }
+                      {{ item.title }}
+                    </span>
+                    <span class="notif__item-body">{{ item.body }}</span>
+                    <span class="notif__item-time">{{ relative(item.createdAt) }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="notif__empty">No tienes notificaciones.</p>
+          }
+        </div>
+      </ng-template>
+    </ion-popover>
+
+    <div id="contenido" class="shell-main" tabindex="-1">
+      <router-outlet />
+    </div>
+  </div>
+</ion-split-pane>

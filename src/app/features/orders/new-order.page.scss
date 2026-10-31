@@ -1,0 +1,124 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-space-4);
+
+  @media (min-width: 992px) {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-3);
+  margin: 0 0 var(--sp-space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'num product remove'
+    'num qty subtotal';
+  gap: var(--sp-space-2) var(--sp-space-3);
+  align-items: start;
+  padding: var(--sp-space-3);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+
+  @media (min-width: 768px) {
+    grid-template-columns: 28px minmax(0, 1fr) 140px 110px auto;
+    grid-template-areas: 'num product qty subtotal remove';
+  }
+}
+
+.line__number {
+  grid-area: num;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-top: 14px;
+  border-radius: 50%;
+  background: var(--sp-surface-2);
+  color: var(--sp-text-muted);
+  font-size: var(--sp-text-xs);
+  font-weight: 600;
+}
+
+.line__product {
+  grid-area: product;
+  min-width: 0;
+}
+
+.line__qty {
+  grid-area: qty;
+}
+
+.line__subtotal {
+  grid-area: subtotal;
+  margin: 18px 0 0;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.line__remove {
+  grid-area: remove;
+  margin-top: 6px;
+}
+
+.notes {
+  margin-top: var(--sp-space-4);
+}
+
+.skeleton {
+  height: 72px;
+  border-radius: var(--sp-radius-sm);
+}
+
+.summary {
+  @media (min-width: 992px) {
+    position: sticky;
+    top: var(--sp-space-4);
+  }
+
+  dl {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-space-2);
+    margin: 0 0 var(--sp-space-4);
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--sp-text-sm);
+    }
+
+    dt {
+      color: var(--sp-text-muted);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+.summary__total {
+  padding-top: var(--sp-space-3);
+  border-top: 1px solid var(--sp-border);
+
+  dt,
+  dd {
+    color: var(--sp-text) !important;
+    font-size: var(--sp-text-lg);
+    font-weight: 700 !important;
+  }
+}

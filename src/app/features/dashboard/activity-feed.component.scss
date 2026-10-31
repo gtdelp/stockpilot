@@ -1,0 +1,131 @@
+:host {
+  display: block;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-3);
+  height: 100%;
+}
+
+.feed__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-space-2);
+}
+
+.feed__title {
+  font-size: var(--sp-text-md);
+  font-weight: 600;
+}
+
+.feed__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--sp-text-xs);
+  font-weight: 600;
+  color: var(--sp-success);
+}
+
+.feed__live--off {
+  color: var(--sp-text-muted);
+
+  .feed__dot {
+    background: var(--sp-text-muted);
+    animation: none;
+  }
+}
+
+.feed__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sp-success);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.feed__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.feed__item {
+  display: flex;
+  gap: var(--sp-space-3);
+  padding: var(--sp-space-2) 0;
+  border-bottom: 1px solid var(--sp-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.feed__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sp-primary-soft);
+  color: var(--sp-primary-soft-text);
+  font-size: 16px;
+}
+
+.feed__icon--low_stock {
+  background: var(--sp-warning-soft);
+  color: var(--sp-warning);
+}
+
+.feed__icon--order_status {
+  background: var(--sp-info-soft);
+  color: var(--sp-info);
+}
+
+.feed__icon--user_created {
+  background: var(--sp-success-soft);
+  color: var(--sp-success);
+}
+
+.feed__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.feed__message {
+  font-size: var(--sp-text-sm);
+  font-weight: 500;
+}
+
+.feed__meta {
+  font-size: var(--sp-text-xs);
+  color: var(--sp-text-muted);
+}
+
+.feed__skeleton {
+  height: 40px;
+  border-radius: var(--sp-radius-sm);
+}
+
+.feed__empty {
+  margin: 0;
+  color: var(--sp-text-muted);
+  font-size: var(--sp-text-sm);
+}

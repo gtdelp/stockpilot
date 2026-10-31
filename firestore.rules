@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Reglas de seguridad de Cloud Firestore para StockPilot.
+// Todas las escrituras de negocio las hace la API con Firebase Admin (que ignora estas reglas);
+// el cliente solo puede leer y marcar sus notificaciones como leídas.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Feed de actividad: solo administradores (rol replicado como custom claim)
+    match /activity/{eventId} {
+      allow read: if request.auth != null && request.auth.token.role == 'admin';
+      allow write: if false;
+    }
+
+    // Notificaciones personales: solo su dueño puede leerlas y marcarlas como leídas
+    match /notifications/{uid}/items/{itemId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+        && request.resource.data.read == true;
+      allow create, delete: if false;
+    }
+
+    // Todo lo demás, denegado
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
