@@ -1,0 +1,59 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      title="Ayuda"
+      subtitle="Manual de usuario de StockPilot. Busca un tema o despliega una sección."
+      [breadcrumbs]="[{ label: 'Inicio', link: '/' }, { label: 'Ayuda' }]"
+      [showHelp]="false"
+    />
+
+    <section class="sp-card sp-stack" aria-label="Manual de usuario">
+      <ion-searchbar
+        [(ngModel)]="query"
+        placeholder="Buscar en la ayuda (p. ej. exportar, stock, rol)…"
+        [debounce]="200"
+        aria-label="Buscar en la ayuda"
+        class="search"
+      ></ion-searchbar>
+      <p class="visually-hidden" aria-live="polite">{{ topics().length }} temas encontrados</p>
+
+      @if (topics().length) {
+        <ion-accordion-group
+          [multiple]="true"
+          [value]="fragment() ? [fragment()] : ['primeros-pasos']"
+        >
+          @for (topic of topics(); track topic.id) {
+            <ion-accordion [value]="topic.id" [id]="topic.id">
+              <ion-item slot="header" lines="full">
+                <ion-icon slot="start" [name]="topic.icon" aria-hidden="true"></ion-icon>
+                <ion-label>
+                  <h2 class="topic-title">{{ topic.title }}</h2>
+                  <p>{{ topic.summary }}</p>
+                </ion-label>
+              </ion-item>
+              <div slot="content" class="topic">
+                @for (section of topic.sections; track section.heading) {
+                  <section>
+                    <h3>{{ section.heading }}</h3>
+                    @if (section.text) {
+                      <p>{{ section.text }}</p>
+                    }
+                    @if (section.steps) {
+                      <ol>
+                        @for (step of section.steps; track step) {
+                          <li>{{ step }}</li>
+                        }
+                      </ol>
+                    }
+                  </section>
+                }
+              </div>
+            </ion-accordion>
+          }
+        </ion-accordion-group>
+      } @else {
+        <p class="no-results">No hay temas que coincidan con «{{ query() }}».</p>
+      }
+    </section>
+  </div>
+</ion-content>

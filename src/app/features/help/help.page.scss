@@ -1,0 +1,31 @@
+.search {
+  padding: 0;
+  --border-radius: var(--sp-radius-sm);
+  --box-shadow: none;
+  --background: var(--sp-surface-2);
+}
+
+ion-accordion-group {
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  overflow: hidden;
+}
+
+ion-item ion-icon {
+  color: var(--sp-primary);
+}
+
+.topic-title {
+  font-size: var(--sp-text-md) !important;
+  font-weight: 600 !important;
+}
+
+.topic {
+  padding: var(--sp-space-4) var(--sp-space-5) var(--sp-space-5);
+  background: var(--sp-surface);
+}
+
+.no-results {
+  margin: 0;
+  color: var(--sp-text-muted);
+}
