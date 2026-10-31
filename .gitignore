@@ -1,0 +1,32 @@
+# Compilación
+/www
+/dist
+/tmp
+/out-tsc
+/documentation
+/coverage
+/playwright-report
+/test-results
+/.lighthouseci
+/lighthouse
+/.vercel
+
+# Dependencias
+/node_modules
+npm-debug.log
+
+# Entorno y secretos (NUNCA versionar)
+.env
+.env.*
+!.env.example
+*.serviceAccount.json
+service-account*.json
+/src/environments/environment.ts
+
+# Editores y sistema
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.angular/cache
+.DS_Store
+Thumbs.db
