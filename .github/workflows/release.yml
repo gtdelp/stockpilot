@@ -1,0 +1,30 @@
+# Etiquetado automático: cuando llega a `main` una versión nueva de package.json,
+# crea la etiqueta vX.Y.Z y publica la Release de GitHub con las notas del CHANGELOG.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    name: Etiqueta y Release de la versión
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Crear etiqueta y Release si la versión es nueva
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if git rev-parse "$version" >/dev/null 2>&1; then
+            echo "La versión $version ya está publicada."
+            exit 0
+          fi
+          awk -v v="${version#v}" '$0 ~ "^## \\[" v "\\]" {found=1; next} found && /^## \[/ {exit} found {print}' CHANGELOG.md > notas.md
+          gh release create "$version" --target "$GITHUB_SHA" --title "StockPilot ${version#v}" --notes-file notas.md
