@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -63,3 +63,15 @@ jobs:
           name: lighthouse-produccion
           path: lighthouse
           retention-days: 90
+      - name: Publicar los informes en la rama «lighthouse»
+        if: always()
+        run: |
+          cd lighthouse
+          scores=$(node -e "const r=require('./movil.report.json');const d=require('./escritorio.report.json');const f=x=>Object.values(x.categories).map(c=>c.title+' '+Math.round(c.score*100)).join(', ');console.log('Móvil: '+f(r)+' | Escritorio: '+f(d))")
+          printf '# Informes Lighthouse de producción\n\nURL auditada: %s/login\n\n%s\n\nGenerados automáticamente por el workflow Deploy tras cada despliegue.\n' "$URL" "$scores" > README.md
+          git init -q -b lighthouse
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Lighthouse de producción: $scores"
+          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" lighthouse
