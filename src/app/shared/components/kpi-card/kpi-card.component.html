@@ -1,0 +1,49 @@
+<ng-template #content>
+  <span class="kpi__icon" aria-hidden="true"><ion-icon [name]="icon()"></ion-icon></span>
+  <span class="kpi__body">
+    <span class="kpi__label">{{ label() }}</span>
+    @if (loading()) {
+      <ion-skeleton-text [animated]="true" class="kpi__skeleton"></ion-skeleton-text>
+    } @else {
+      <span class="kpi__value">{{ displayValue() }}</span>
+      @if (trendText()) {
+        <span
+          class="kpi__trend"
+          [class.kpi__trend--good]="trendIsGood()"
+          [class.kpi__trend--bad]="!trendIsGood() && trend() !== 'flat'"
+        >
+          <ion-icon
+            [name]="
+              trend() === 'up'
+                ? 'trending-up-outline'
+                : trend() === 'down'
+                  ? 'trending-down-outline'
+                  : 'remove-outline'
+            "
+            aria-hidden="true"
+          ></ion-icon>
+          {{ trendText() }}
+          <span class="kpi__caption">{{ caption() }}</span>
+        </span>
+      } @else if (caption()) {
+        <span class="kpi__caption">{{ caption() }}</span>
+      }
+    }
+  </span>
+</ng-template>
+
+@if (selectable()) {
+  <button
+    type="button"
+    class="kpi kpi--button"
+    [class.kpi--active]="active()"
+    [attr.aria-pressed]="active()"
+    (click)="selected.emit()"
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </button>
+} @else {
+  <div class="kpi" role="group" [attr.aria-label]="ariaLabel()" [attr.aria-busy]="loading()">
+    <ng-container [ngTemplateOutlet]="content" />
+  </div>
+}
