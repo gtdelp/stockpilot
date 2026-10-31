@@ -1,0 +1,117 @@
+<div class="modal">
+  <header class="modal__header">
+    <h2>Pedido #{{ orderId() }}</h2>
+    <ion-button fill="clear" color="medium" (click)="close()" aria-label="Cerrar">
+      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+    </ion-button>
+  </header>
+
+  <div class="modal__body" [attr.aria-busy]="!order() && !error()">
+    @if (error()) {
+      <div class="sp-alert sp-alert--error" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    @if (order(); as order) {
+      <dl class="summary">
+        <div>
+          <dt>Cliente</dt>
+          <dd>{{ order.customerName }}</dd>
+        </div>
+        <div>
+          <dt>Fecha</dt>
+          <dd>{{ date(order.createdAt) }}</dd>
+        </div>
+        <div>
+          <dt>Estado</dt>
+          <dd>
+            <span [class]="'sp-badge sp-badge--' + order.status">{{ labels[order.status] }}</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Total</dt>
+          <dd class="summary__total">{{ currency(order.total) }}</dd>
+        </div>
+      </dl>
+
+      @if (order.notes) {
+        <p class="notes"><strong>Notas:</strong> {{ order.notes }}</p>
+      }
+
+      <div class="lines">
+        <table>
+          <caption>
+            Líneas del pedido
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Producto</th>
+              <th scope="col" class="num">Cant.</th>
+              <th scope="col" class="num">Precio</th>
+              <th scope="col" class="num">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of order.items ?? []; track item.productId) {
+              <tr>
+                <th scope="row">
+                  <span class="lines__name">{{ item.productName }}</span>
+                  <span class="lines__sku">{{ item.sku }}</span>
+                </th>
+                <td class="num">{{ item.quantity }}</td>
+                <td class="num">{{ currency(item.unitPrice) }}</td>
+                <td class="num">{{ currency(item.unitPrice * item.quantity) }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colspan="3">Total</th>
+              <td class="num">{{ currency(order.total) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      @if (canChange()) {
+        <div class="status-change">
+          <ion-select
+            class="sp-input"
+            label="Cambiar estado"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            [(ngModel)]="selectedStatus"
+          >
+            @for (option of statuses; track option.value) {
+              <ion-select-option [value]="option.value">{{ option.label }}</ion-select-option>
+            }
+          </ion-select>
+          @if (selectedStatus() === 'cancelled') {
+            <p class="status-change__hint">Al cancelar, las unidades vuelven al stock.</p>
+          }
+        </div>
+      }
+    } @else if (!error()) {
+      <ion-skeleton-text [animated]="true" class="skeleton"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" class="skeleton skeleton--tall"></ion-skeleton-text>
+    }
+  </div>
+
+  <footer class="modal__footer">
+    <ion-button fill="outline" color="medium" (click)="close()">Cerrar</ion-button>
+    @if (canChange()) {
+      <ion-button
+        [disabled]="saving() || selectedStatus() === order()?.status"
+        (click)="saveStatus()"
+      >
+        @if (saving()) {
+          <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+        }
+        Guardar estado
+      </ion-button>
+    }
+  </footer>
+</div>

@@ -1,0 +1,151 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      title="Nuevo pedido"
+      subtitle="Añade productos, revisa el total y confirma."
+      [breadcrumbs]="[
+        { label: 'Inicio', link: '/' },
+        { label: 'Pedidos', link: '/pedidos' },
+        { label: 'Nuevo pedido' },
+      ]"
+      (helpRequested)="help.open('nuevo-pedido')"
+    />
+
+    <form class="layout" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="sp-card" aria-labelledby="lines-title">
+        <h2 id="lines-title" class="sp-card__title">Productos</h2>
+
+        @if (serverError()) {
+          <div class="sp-alert sp-alert--error" role="alert">
+            <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+            <span>{{ serverError() }}</span>
+          </div>
+        }
+
+        @if (loadingProducts()) {
+          <ion-skeleton-text [animated]="true" class="skeleton"></ion-skeleton-text>
+        } @else {
+          <ol class="lines" formArrayName="lines">
+            @for (line of lines.controls; track line; let i = $index) {
+              <li class="line" [formGroupName]="i">
+                <span class="line__number" aria-hidden="true">{{ i + 1 }}</span>
+                <div class="line__product">
+                  <ion-select
+                    class="sp-input"
+                    formControlName="productId"
+                    label="Producto"
+                    [attr.aria-label]="'Producto de la línea ' + (i + 1)"
+                    labelPlacement="stacked"
+                    fill="outline"
+                    interface="modal"
+                    [interfaceOptions]="{ header: 'Selecciona un producto' }"
+                    placeholder="Selecciona…"
+                    [attr.aria-describedby]="'line-product-msg-' + i"
+                  >
+                    @for (product of products(); track product.id) {
+                      <ion-select-option [value]="product.id">
+                        {{ product.sku }} · {{ product.name }} ({{ product.stock }} uds.)
+                      </ion-select-option>
+                    }
+                  </ion-select>
+                  <app-field-error
+                    [control]="line.controls.productId"
+                    [id]="'line-product-msg-' + i"
+                  />
+                </div>
+                <div class="line__qty">
+                  <ion-input
+                    class="sp-input"
+                    formControlName="quantity"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    [max]="productOf(i)?.stock ?? null"
+                    step="1"
+                    label="Cantidad"
+                    [attr.aria-label]="'Cantidad de la línea ' + (i + 1)"
+                    labelPlacement="stacked"
+                    fill="outline"
+                    [attr.aria-describedby]="'line-qty-msg-' + i"
+                  ></ion-input>
+                  <app-field-error
+                    [control]="line.controls.quantity"
+                    [id]="'line-qty-msg-' + i"
+                    [hint]="productOf(i) ? currency(productOf(i)!.price) + ' / ud.' : ''"
+                  />
+                </div>
+                <p class="line__subtotal">
+                  <span class="visually-hidden">Subtotal: </span>{{ subtotal(i) }}
+                </p>
+                <ion-button
+                  fill="clear"
+                  color="danger"
+                  class="line__remove"
+                  [disabled]="lines.length === 1"
+                  (click)="removeLine(i)"
+                  [attr.aria-label]="'Eliminar línea ' + (i + 1)"
+                >
+                  <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
+                </ion-button>
+              </li>
+            }
+          </ol>
+
+          @if (lines.hasError('duplicate')) {
+            <p class="sp-alert sp-alert--warning" role="alert">
+              <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+              Hay productos repetidos: agrupa las unidades en una sola línea.
+            </p>
+          }
+
+          <ion-button fill="outline" (click)="addLine()">
+            <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+            Añadir línea
+          </ion-button>
+        }
+
+        <div class="notes">
+          <ion-textarea
+            class="sp-input"
+            formControlName="notes"
+            label="Notas (opcional)"
+            labelPlacement="stacked"
+            fill="outline"
+            [autoGrow]="true"
+            [counter]="true"
+            maxlength="300"
+          ></ion-textarea>
+        </div>
+      </section>
+
+      <aside class="sp-card summary" aria-labelledby="summary-title">
+        <h2 id="summary-title" class="sp-card__title">Resumen</h2>
+        <dl>
+          <div>
+            <dt>Líneas</dt>
+            <dd>{{ lines.length }}</dd>
+          </div>
+          <div>
+            <dt>Unidades</dt>
+            <dd>{{ units() }}</dd>
+          </div>
+          <div class="summary__total">
+            <dt>Total</dt>
+            <dd aria-live="polite">{{ currency(total()) }}</dd>
+          </div>
+        </dl>
+        <ion-button type="submit" expand="block" [disabled]="submitting() || loadingProducts()">
+          @if (submitting()) {
+            <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+          } @else {
+            <ion-icon slot="start" name="checkmark-outline" aria-hidden="true"></ion-icon>
+          }
+          Confirmar pedido
+        </ion-button>
+        <ion-button expand="block" fill="clear" color="medium" routerLink="/pedidos"
+          >Cancelar</ion-button
+        >
+      </aside>
+    </form>
+  </div>
+</ion-content>

@@ -1,0 +1,94 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      [title]="auth.isAdmin() ? 'Pedidos' : 'Mis pedidos'"
+      [subtitle]="
+        auth.isAdmin()
+          ? 'Consulta y gestiona el estado de todos los pedidos.'
+          : 'Sigue el estado de tus pedidos.'
+      "
+      [breadcrumbs]="[{ label: 'Inicio', link: '/' }, { label: 'Pedidos' }]"
+      (helpRequested)="help.open('pedidos')"
+    >
+      <app-export-menu
+        label="Exportar pedidos"
+        [disabled]="store.loading() || !visibleRows().length"
+        [busy]="exporting()"
+        (exportCsv)="exportCsv()"
+        (exportPdf)="exportPdf()"
+      />
+      <ion-button routerLink="/pedidos/nuevo">
+        <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+        Nuevo pedido
+      </ion-button>
+    </app-page-header>
+
+    <section class="sp-card sp-stack" aria-label="Listado de pedidos">
+      <div class="sp-filters">
+        <ion-select
+          class="sp-input"
+          label="Estado"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [(ngModel)]="status"
+        >
+          <ion-select-option [value]="null">Todos</ion-select-option>
+          @for (option of statuses; track option.value) {
+            <ion-select-option [value]="option.value">{{ option.label }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-input
+          class="sp-input"
+          type="date"
+          label="Desde"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="from"
+        ></ion-input>
+        <ion-input
+          class="sp-input"
+          type="date"
+          label="Hasta"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="to"
+        ></ion-input>
+        <ion-button fill="outline" color="medium" (click)="clearFilters()">
+          <ion-icon slot="start" name="close-circle-outline" aria-hidden="true"></ion-icon>
+          Limpiar filtros
+        </ion-button>
+      </div>
+
+      @if (store.error()) {
+        <app-empty-state
+          tone="error"
+          icon="cloud-offline-outline"
+          title="No se han podido cargar los pedidos"
+          [message]="store.error() ?? ''"
+        >
+          <ion-button (click)="retry()">
+            <ion-icon slot="start" name="refresh-outline" aria-hidden="true"></ion-icon>
+            Reintentar
+          </ion-button>
+        </app-empty-state>
+      } @else {
+        <app-data-table
+          caption="Listado de pedidos"
+          searchPlaceholder="Buscar por número, cliente o estado…"
+          emptyTitle="No hay pedidos"
+          emptyMessage="Cambia los filtros o crea un pedido nuevo."
+          [rows]="store.orders()"
+          [columns]="columns()"
+          [rowKey]="rowKey"
+          [loading]="store.loading()"
+          [clickable]="true"
+          [initialSort]="{ key: 'date', direction: 'desc' }"
+          [(search)]="search"
+          (rowClick)="open($event)"
+          (viewChange)="visibleRows.set($event)"
+        />
+      }
+    </section>
+  </div>
+</ion-content>
