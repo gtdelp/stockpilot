@@ -1,0 +1,43 @@
+h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-2);
+
+  ion-icon {
+    color: var(--sp-primary);
+  }
+}
+
+.help__summary {
+  margin: 0 0 var(--sp-space-4);
+  color: var(--sp-text-muted);
+}
+
+section + section {
+  margin-top: var(--sp-space-4);
+}
+
+h3 {
+  font-size: var(--sp-text-md);
+  font-weight: 600;
+  margin-bottom: var(--sp-space-2);
+}
+
+p,
+li {
+  font-size: var(--sp-text-sm);
+  line-height: 1.6;
+}
+
+p {
+  margin: 0;
+}
+
+ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+li + li {
+  margin-top: var(--sp-space-1);
+}
