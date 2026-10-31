@@ -1,0 +1,86 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      title="Mi perfil"
+      subtitle="Tus datos de acceso y preferencias."
+      [breadcrumbs]="[{ label: 'Inicio', link: '/' }, { label: 'Mi perfil' }]"
+      (helpRequested)="help.open('perfil')"
+    />
+
+    <div class="grid">
+      <section class="sp-card identity" aria-labelledby="identity-title">
+        <span class="identity__avatar" aria-hidden="true">{{ initials() }}</span>
+        <div>
+          <h2 id="identity-title" class="identity__name">{{ auth.profile()?.fullName }}</h2>
+          <p class="identity__email">{{ auth.profile()?.email }}</p>
+        </div>
+        <dl class="identity__meta">
+          <div>
+            <dt>Rol</dt>
+            <dd>
+              <span class="sp-badge sp-badge--primary">{{ roleLabel() }}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Miembro desde</dt>
+            <dd>{{ since() }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div class="sp-stack">
+        <section class="sp-card" aria-labelledby="data-title">
+          <h2 id="data-title" class="sp-card__title">Datos personales</h2>
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="form">
+            <ion-input
+              class="sp-input"
+              formControlName="fullName"
+              label="Nombre visible"
+              labelPlacement="stacked"
+              fill="outline"
+              autocomplete="name"
+              aria-describedby="profile-name-msg"
+              [required]="true"
+            ></ion-input>
+            <app-field-error [control]="form.controls.fullName" id="profile-name-msg" />
+            <ion-input
+              class="sp-input"
+              [value]="auth.profile()?.email"
+              label="Correo electrónico"
+              labelPlacement="stacked"
+              fill="outline"
+              [readonly]="true"
+              aria-describedby="profile-email-hint"
+            ></ion-input>
+            <p id="profile-email-hint" class="hint">
+              El correo identifica tu cuenta y no se puede cambiar.
+            </p>
+            <div class="sp-actions">
+              <ion-button type="submit" [disabled]="saving() || form.pristine">
+                @if (saving()) {
+                  <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+                }
+                Guardar cambios
+              </ion-button>
+            </div>
+          </form>
+        </section>
+
+        <section class="sp-card" aria-labelledby="prefs-title">
+          <h2 id="prefs-title" class="sp-card__title">Preferencias</h2>
+          <ion-toggle
+            [checked]="theme.isDark()"
+            (ionChange)="theme.toggle()"
+            labelPlacement="end"
+            justify="start"
+          >
+            Modo oscuro
+          </ion-toggle>
+          <p class="hint">
+            Se recuerda en este navegador. Por defecto se usa la preferencia del sistema.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+</ion-content>

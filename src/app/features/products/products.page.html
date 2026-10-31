@@ -1,0 +1,94 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      [title]="auth.isAdmin() ? 'Productos' : 'Catálogo'"
+      [subtitle]="
+        auth.isAdmin()
+          ? 'Gestiona el inventario, precios y niveles de stock.'
+          : 'Consulta los productos disponibles y su stock.'
+      "
+      [breadcrumbs]="[
+        { label: 'Inicio', link: '/' },
+        { label: auth.isAdmin() ? 'Productos' : 'Catálogo' },
+      ]"
+      (helpRequested)="help.open('productos')"
+    >
+      <app-export-menu
+        label="Exportar productos"
+        [disabled]="store.loading() || !visibleRows().length"
+        [busy]="exporting()"
+        (exportCsv)="exportCsv()"
+        (exportPdf)="exportPdf()"
+      />
+      @if (auth.isAdmin()) {
+        <ion-button (click)="create()">
+          <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+          Nuevo producto
+        </ion-button>
+      } @else {
+        <ion-button (click)="newOrder()">
+          <ion-icon slot="start" name="cart-outline" aria-hidden="true"></ion-icon>
+          Nuevo pedido
+        </ion-button>
+      }
+    </app-page-header>
+
+    <section class="sp-card sp-stack" aria-label="Listado de productos">
+      <div class="filters">
+        <ion-select
+          class="sp-input filters__category"
+          label="Categoría"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [(ngModel)]="categoryId"
+        >
+          <ion-select-option [value]="null">Todas las categorías</ion-select-option>
+          @for (category of store.categories(); track category.id) {
+            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-toggle
+          [(ngModel)]="lowStockOnly"
+          labelPlacement="end"
+          justify="start"
+          class="filters__toggle"
+        >
+          Solo stock bajo
+          @if (store.lowStockCount() && !lowStockOnly()) {
+            <span class="sp-badge sp-badge--pending">{{ store.lowStockCount() }}</span>
+          }
+        </ion-toggle>
+      </div>
+
+      @if (store.error()) {
+        <app-empty-state
+          tone="error"
+          icon="cloud-offline-outline"
+          title="No se han podido cargar los productos"
+          [message]="store.error() ?? ''"
+        >
+          <ion-button (click)="retry()">
+            <ion-icon slot="start" name="refresh-outline" aria-hidden="true"></ion-icon>
+            Reintentar
+          </ion-button>
+        </app-empty-state>
+      } @else {
+        <app-data-table
+          caption="Listado de productos"
+          searchPlaceholder="Buscar por nombre, SKU, categoría…"
+          emptyTitle="No hay productos"
+          [rows]="store.products()"
+          [columns]="columns"
+          [rowKey]="rowKey"
+          [actions]="auth.isAdmin() ? adminActions : []"
+          [loading]="store.loading()"
+          [initialSort]="{ key: 'sku', direction: 'asc' }"
+          [(search)]="search"
+          (rowAction)="onAction($event)"
+          (viewChange)="visibleRows.set($event)"
+        />
+      }
+    </section>
+  </div>
+</ion-content>
