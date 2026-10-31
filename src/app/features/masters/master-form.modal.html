@@ -1,0 +1,101 @@
+<div class="modal">
+  <header class="modal__header">
+    <h2 id="master-form-title">{{ title() }}</h2>
+    <ion-button fill="clear" color="medium" (click)="cancel()" aria-label="Cerrar">
+      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+    </ion-button>
+  </header>
+
+  <form
+    class="modal__body"
+    id="master-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+    aria-labelledby="master-form-title"
+  >
+    @if (serverError()) {
+      <div class="sp-alert sp-alert--error" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <span>{{ serverError() }}</span>
+      </div>
+    }
+    <div class="sp-form-grid">
+      <div [class.sp-form-grid__full]="!isSupplier()">
+        <ion-input
+          class="sp-input"
+          formControlName="name"
+          label="Nombre"
+          labelPlacement="stacked"
+          fill="outline"
+          aria-describedby="mf-name-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error [control]="form.controls.name" id="mf-name-msg" />
+      </div>
+      @if (isSupplier()) {
+        <div>
+          <ion-input
+            class="sp-input"
+            formControlName="email"
+            type="email"
+            inputmode="email"
+            label="Correo de pedidos"
+            labelPlacement="stacked"
+            fill="outline"
+            aria-describedby="mf-email-msg"
+            [required]="true"
+          ></ion-input>
+          <app-field-error [control]="form.controls.email" id="mf-email-msg" />
+        </div>
+        <div>
+          <ion-input
+            class="sp-input"
+            formControlName="phone"
+            type="tel"
+            inputmode="tel"
+            label="Teléfono"
+            labelPlacement="stacked"
+            fill="outline"
+            aria-describedby="mf-phone-msg"
+          ></ion-input>
+          <app-field-error [control]="form.controls.phone" id="mf-phone-msg" />
+        </div>
+        <div>
+          <ion-input
+            class="sp-input"
+            formControlName="city"
+            label="Ciudad"
+            labelPlacement="stacked"
+            fill="outline"
+            aria-describedby="mf-city-msg"
+          ></ion-input>
+          <app-field-error [control]="form.controls.city" id="mf-city-msg" />
+        </div>
+      } @else {
+        <div class="sp-form-grid__full">
+          <ion-textarea
+            class="sp-input"
+            formControlName="description"
+            label="Descripción"
+            labelPlacement="stacked"
+            fill="outline"
+            [autoGrow]="true"
+            [counter]="true"
+            maxlength="200"
+          ></ion-textarea>
+        </div>
+      }
+    </div>
+  </form>
+
+  <footer class="modal__footer">
+    <ion-button fill="outline" color="medium" (click)="cancel()">Cancelar</ion-button>
+    <ion-button type="submit" form="master-form" [disabled]="saving()">
+      @if (saving()) {
+        <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+      }
+      Guardar
+    </ion-button>
+  </footer>
+</div>

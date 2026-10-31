@@ -1,0 +1,119 @@
+<div class="modal">
+  <header class="modal__header">
+    <h2 id="user-form-title">Nuevo usuario</h2>
+    <ion-button fill="clear" color="medium" (click)="cancel()" aria-label="Cerrar">
+      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+    </ion-button>
+  </header>
+
+  <form
+    class="modal__body"
+    id="user-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+    aria-labelledby="user-form-title"
+  >
+    @if (serverError()) {
+      <div class="sp-alert sp-alert--error" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <span>{{ serverError() }}</span>
+      </div>
+    }
+    <div class="sp-form-grid">
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="fullName"
+          label="Nombre completo"
+          labelPlacement="stacked"
+          fill="outline"
+          autocomplete="off"
+          aria-describedby="uf-name-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error [control]="form.controls.fullName" id="uf-name-msg" />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="email"
+          type="email"
+          inputmode="email"
+          label="Correo electrónico"
+          labelPlacement="stacked"
+          fill="outline"
+          autocomplete="off"
+          aria-describedby="uf-email-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error
+          [control]="form.controls.email"
+          id="uf-email-msg"
+          hint="Se comprueba que no exista ya."
+        />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="password"
+          type="password"
+          label="Contraseña"
+          labelPlacement="stacked"
+          fill="outline"
+          autocomplete="new-password"
+          aria-describedby="uf-pass-msg"
+          [required]="true"
+        >
+          <ion-input-password-toggle
+            slot="end"
+            showLabel="Mostrar contraseña"
+            hideLabel="Ocultar contraseña"
+          ></ion-input-password-toggle>
+        </ion-input>
+        <app-field-error
+          [control]="form.controls.password"
+          id="uf-pass-msg"
+          hint="8+ caracteres con mayúscula, minúscula y número."
+        />
+      </div>
+      <div>
+        <ion-input
+          class="sp-input"
+          formControlName="confirmPassword"
+          type="password"
+          label="Repite la contraseña"
+          labelPlacement="stacked"
+          fill="outline"
+          autocomplete="new-password"
+          aria-describedby="uf-confirm-msg"
+          [required]="true"
+        ></ion-input>
+        <app-field-error [control]="form.controls.confirmPassword" id="uf-confirm-msg" />
+      </div>
+      <fieldset class="sp-form-grid__full roles">
+        <legend class="sp-label">Rol</legend>
+        <ion-radio-group formControlName="role">
+          @for (role of roles; track role.value) {
+            <div class="roles__option">
+              <ion-radio [value]="role.value" labelPlacement="end" justify="start">
+                <span class="roles__label">{{ role.label }}</span>
+                <span class="roles__description">{{ role.description }}</span>
+              </ion-radio>
+            </div>
+          }
+        </ion-radio-group>
+      </fieldset>
+    </div>
+  </form>
+
+  <footer class="modal__footer">
+    <ion-button fill="outline" color="medium" (click)="cancel()">Cancelar</ion-button>
+    <ion-button type="submit" form="user-form" [disabled]="saving() || pending()">
+      @if (saving()) {
+        <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
+      }
+      Crear usuario
+    </ion-button>
+  </footer>
+</div>

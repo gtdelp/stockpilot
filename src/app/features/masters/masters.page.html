@@ -1,0 +1,61 @@
+<ion-content>
+  <div class="sp-page sp-stack">
+    <app-page-header
+      title="Categorías y proveedores"
+      subtitle="Datos maestros del catálogo."
+      [breadcrumbs]="[{ label: 'Inicio', link: '/' }, { label: 'Categorías y proveedores' }]"
+      (helpRequested)="help.open('maestros')"
+    >
+      <ion-button (click)="create()">
+        <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+        {{ tab() === 'category' ? 'Nueva categoría' : 'Nuevo proveedor' }}
+      </ion-button>
+    </app-page-header>
+
+    <section class="sp-card sp-stack" aria-label="Datos maestros">
+      <ion-segment [(ngModel)]="tab" aria-label="Tipo de dato maestro">
+        <ion-segment-button value="category">
+          <ion-label>Categorías ({{ categories().length }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="supplier">
+          <ion-label>Proveedores ({{ suppliers().length }})</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      @if (error()) {
+        <app-empty-state
+          tone="error"
+          icon="cloud-offline-outline"
+          title="No se han podido cargar los datos"
+          [message]="error() ?? ''"
+        >
+          <ion-button (click)="load()">Reintentar</ion-button>
+        </app-empty-state>
+      } @else if (tab() === 'category') {
+        <app-data-table
+          caption="Categorías"
+          searchPlaceholder="Buscar categoría…"
+          [rows]="categories()"
+          [columns]="categoryColumns"
+          [rowKey]="categoryKey"
+          [actions]="categoryActions"
+          [loading]="loading()"
+          [initialSort]="{ key: 'name', direction: 'asc' }"
+          (rowAction)="onCategoryAction($event)"
+        />
+      } @else {
+        <app-data-table
+          caption="Proveedores"
+          searchPlaceholder="Buscar proveedor, ciudad…"
+          [rows]="suppliers()"
+          [columns]="supplierColumns"
+          [rowKey]="supplierKey"
+          [actions]="supplierActions"
+          [loading]="loading()"
+          [initialSort]="{ key: 'name', direction: 'asc' }"
+          (rowAction)="onSupplierAction($event)"
+        />
+      }
+    </section>
+  </div>
+</ion-content>
